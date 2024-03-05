@@ -5,6 +5,15 @@ exports.register = async (req, res, next) => {
     const { firstname, lastname, email, number, password, confirmpassword } =
       req.body;
 
+    // Check if the email already exists in the database
+    const existingUser = await userService.getUserByEmail(email);
+    if (existingUser) {
+      return res
+        .status(400)
+        .json({ status: false, error: "Email already exists" });
+    }
+
+    // If the email is unique, proceed with user registration
     const successRes = await userService.registerUser(
       firstname,
       lastname,
@@ -14,9 +23,9 @@ exports.register = async (req, res, next) => {
       confirmpassword
     );
 
-    res.json({ status: true, success: "User registered successfully" });
+    return res.json({ status: true, success: "User registered successfully" });
   } catch (error) {
-    throw error;
+    next(error); // Pass the error to the error handling middleware
   }
 };
 
@@ -27,7 +36,7 @@ exports.login = async (req, res, next) => {
     const user = await userService.checkuser(email);
 
     if (!user) {
-      throw new Error("User don't exist");
+      throw new Error("User doesn't exist");
     }
 
     const isMatch = await user.comparePassword(password);
@@ -45,6 +54,6 @@ exports.login = async (req, res, next) => {
 
     res.status(200).json({ status: true, token: token });
   } catch (error) {
-    throw error;
+    next(error);
   }
 };

@@ -1,7 +1,7 @@
 const userModel = require("../model/user.model");
 const jwt = require("jsonwebtoken");
 
-class userService {
+class UserService {
   static async registerUser(
     firstname,
     lastname,
@@ -24,7 +24,8 @@ class userService {
       throw err;
     }
   }
-  static async checkuser(email) {
+
+  static async checkUser(email) {
     try {
       return await userModel.findOne({ email });
     } catch (error) {
@@ -35,6 +36,15 @@ class userService {
   static async generateToken(tokenData, secretKey, jwt_expire) {
     return jwt.sign(tokenData, secretKey, { expiresIn: jwt_expire });
   }
+
+  static async getUserByEmail(email) {
+    try {
+      const user = await userModel.findOne({ email });
+      return user;
+    } catch (error) {
+      throw new Error("Error occurred while fetching user by email");
+    }
+  }
 }
 
-module.exports = userService;
+module.exports = UserService;
