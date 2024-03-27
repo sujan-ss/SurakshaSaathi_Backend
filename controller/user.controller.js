@@ -33,7 +33,7 @@ exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    const user = await userService.checkuser(email);
+    const user = await userService.checkUser(email);
 
     if (!user) {
       throw new Error("User doesn't exist");
@@ -46,11 +46,8 @@ exports.login = async (req, res, next) => {
 
     let tokenData = { _id: user._id, email: user.email };
 
-    const token = await userService.generateToken(
-      tokenData,
-      "secretKey",
-      "24h"
-    );
+    // Generate token without expiration
+    const token = await userService.generateToken(tokenData, "secretKey");
 
     res.status(200).json({ status: true, token: token });
   } catch (error) {
