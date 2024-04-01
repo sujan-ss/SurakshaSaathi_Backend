@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="adminpanel.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="logo">Admin Panel</div>
+      <ul class="nav-links">
+        <li><a href="#">Logout</a></li>
+        <!-- Added Logout -->
+      </ul>
+    </nav>
+    <div class="container">
+      <table class="user-table">
+        <thead>
+          <tr>
+            <th>User ID</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+            <th>Number</th>
+            <th>Photo</th>
+            <th>Passport</th>
+            <th>Verify</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- User data will be dynamically added here -->
+        </tbody>
+      </table>
+    </div>
+    <script src="adminpanel.js"></script>
+  </body>
+</html>

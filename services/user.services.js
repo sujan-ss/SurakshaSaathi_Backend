@@ -8,7 +8,8 @@ class UserService {
     email,
     number,
     password,
-    confirmpassword
+    confirmpassword,
+    image // Add image parameter
   ) {
     try {
       const createUser = new userModel({
@@ -18,6 +19,7 @@ class UserService {
         number,
         password,
         confirmpassword,
+        image: image ? image.path : null, // Save the image path in the database
       });
       return await createUser.save();
     } catch (err) {

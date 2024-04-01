@@ -2,8 +2,15 @@ const userService = require("../services/user.services");
 
 exports.register = async (req, res, next) => {
   try {
-    const { firstname, lastname, email, number, password, confirmpassword } =
-      req.body;
+    const {
+      firstname,
+      lastname,
+      email,
+      number,
+      password,
+      confirmpassword,
+      image,
+    } = req.body;
 
     // Check if the email already exists in the database
     const existingUser = await userService.getUserByEmail(email);
@@ -20,7 +27,8 @@ exports.register = async (req, res, next) => {
       email,
       number,
       password,
-      confirmpassword
+      confirmpassword,
+      image // Pass the image to the service function for registration
     );
 
     return res.json({ status: true, success: "User registered successfully" });

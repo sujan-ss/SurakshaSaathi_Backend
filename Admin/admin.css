@@ -187,3 +187,16 @@ body {
     display: none;
   }
 }
+.button button {
+  color: #fff;
+  background-color: #32508e;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.button button:hover {
+  background-color: #2b446b; /* Darker shade of blue on hover */
+}

@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <title>Suraksha Saathi-Admin</title>
     <link rel="stylesheet" href="admin.css" />
-
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
@@ -29,7 +28,7 @@
         <div class="form-content">
           <div class="login-form">
             <div class="title">Main Admin Login</div>
-            <form action="#">
+            <form id="loginForm">
               <div class="input-boxes">
                 <div class="input-box">
                   <i class="fas fa-user"></i>
@@ -50,7 +49,8 @@
                   />
                 </div>
                 <div class="button input-box">
-                  <input type="submit" value="Login" />
+                  <br />
+                  <button type="submit">Login</button>
                 </div>
               </div>
             </form>
@@ -58,5 +58,15 @@
         </div>
       </div>
     </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const loginForm = document.getElementById("loginForm");
+        loginForm.addEventListener("submit", function (event) {
+          event.preventDefault(); // Prevent form submission
+          window.location.href = "adminpanel.html"; // Redirect to desired page
+        });
+      });
+    </script>
   </body>
 </html>
