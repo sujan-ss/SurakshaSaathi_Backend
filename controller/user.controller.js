@@ -2,6 +2,7 @@ const User = require("../model/user.model");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
+const jwtController = require("./jwt.controller");
 
 const signUp = async (req, res) => {
   console.log(req.body);
@@ -57,6 +58,8 @@ const signUp = async (req, res) => {
 };
 
 const login = async (req, res) => {
+  console.log("login");
+  console.log(req.body.email);
   User.find({ email: req.body.email })
     .exec()
     .then((user) => {
@@ -86,6 +89,7 @@ const login = async (req, res) => {
             res.status(200).json({
               message: "Login successfull",
               accessToken: token,
+              verified: user[0].verified,
             });
           }
         });
@@ -98,4 +102,90 @@ const login = async (req, res) => {
     });
 };
 
-module.exports = { signUp, login };
+const getUnverifiedUsers = async (req, res) => {
+  try {
+    // Call the verifyAdmin middleware function before executing the main logic
+    jwtController.verifyAdmin(req, res, () => {
+      // If the middleware passes, proceed with fetching unverified users
+      User.find({ verified: false })
+        .exec()
+        .then((unverifiedUsers) => {
+          res.status(200).json({
+            users: unverifiedUsers,
+          });
+        })
+        .catch((err) => {
+          console.error(err);
+          res.status(500).json({
+            error: "Internal Server Error",
+          });
+        });
+    });
+  } catch (err) {
+    // Handle errors
+    console.error(err);
+    res.status(500).json({
+      error: "Internal Server Error",
+    });
+  }
+};
+
+const verifyUser = async (req, res) => {
+  console.log("hetauda");
+  try {
+    jwtController.verifyAdmin(req, res, async () => {
+      console.log("hetauda1");
+      const userId = req.body.userId;
+      console.log(userId);
+      if (userId === undefined) {
+        return res.status(400).json({
+          error: "User ID is required",
+        });
+      }
+      User.findOneAndUpdate({ _id: userId }, { verified: true }).then(() => {
+        res.status(200).json({
+          message: "User verified successfully",
+        });
+      });
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: "Internal Server Error",
+    });
+  }
+};
+
+const getUserProfile = async (req, res) => {
+  jwtController.verifyToken(req, res, () => {
+    jwt.verify(req.token, "1234mmm", (err, authData) => {
+      if (err) {
+        res.status(403).json({
+          error: "Forbidden",
+        });
+      } else {
+        User.findById(authData.id)
+          .exec()
+          .then((user) => {
+            res.status(200).json({
+              user: user,
+            });
+          })
+          .catch((err) => {
+            console.error(err);
+            res.status(500).json({
+              error: "Internal Server Error",
+            });
+          });
+      }
+    });
+  });
+};
+
+module.exports = {
+  signUp,
+  login,
+  getUnverifiedUsers,
+  verifyUser,
+  getUserProfile,
+};
