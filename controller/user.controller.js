@@ -156,6 +156,55 @@ const verifyUser = async (req, res) => {
   }
 };
 
+const getAllVerifiedUsers = async (req, res) => {
+  try {
+    jwtController.verifyAdmin(req, res, () => {
+      User.find({ verified: true })
+        .exec()
+        .then((verifiedUsers) => {
+          res.status(200).json({
+            users: verifiedUsers,
+          });
+        })
+        .catch((err) => {
+          console.error(err);
+          res.status(500).json({
+            error: "Internal Server Error",
+          });
+        });
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: "Internal Server Error",
+    });
+  }
+};
+
+const deleteUser = async (req, res) => {
+  try {
+    jwtController.verifyAdmin(req, res, () => {
+      const userId = req.body.userId;
+      console.log(userId);
+      if (userId === undefined) {
+        return res.status(400).json({
+          error: "User ID is required",
+        });
+      }
+      User.findOneAndDelete({ _id: userId }).then(() => {
+        res.status(200).json({
+          message: "User deleted successfully",
+        });
+      });
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: "Internal Server Error",
+    });
+  }
+};
+
 const getUserProfile = async (req, res) => {
   jwtController.verifyToken(req, res, () => {
     jwt.verify(req.token, "1234mmm", (err, authData) => {
@@ -188,4 +237,6 @@ module.exports = {
   getUnverifiedUsers,
   verifyUser,
   getUserProfile,
+  getAllVerifiedUsers,
+  deleteUser,
 };

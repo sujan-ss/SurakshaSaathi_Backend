@@ -22,6 +22,10 @@ const incidentModel = new Schema({
     type: "string",
     required: true,
   },
+  userId: {
+    type: "string",
+    required: true,
+  },
 });
 
 const incident = db.model("Incident", incidentModel);

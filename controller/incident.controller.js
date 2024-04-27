@@ -3,7 +3,10 @@ const jwt = require("jsonwebtoken");
 const Incident = require("../model/incident.model");
 const jwtController = require("./jwt.controller");
 
+const userModule = require("../model/user.model");
+
 const addIncident = async (req, res) => {
+  console.log("called add incident");
   try {
     jwtController.verifyToken(req, res, () => {
       jwt.verify(req.token, "1234mmm", (err, authData) => {
@@ -13,13 +16,15 @@ const addIncident = async (req, res) => {
             error: "Forbidden",
           });
         } else {
-          console.log(authData);
+          console.log("called add incident");
+          console.log(req.body);
           const incident = new Incident({
             _id: new mongoose.Types.ObjectId(),
             lat: req.body.lat,
             long: req.body.long,
             description: req.body.description,
             locationName: req.body.locationName,
+            userId: authData.id,
           });
 
           incident
@@ -31,6 +36,7 @@ const addIncident = async (req, res) => {
               });
             })
             .catch((err) => {
+              console.log(err);
               res.status(500).json({
                 error: err,
               });
@@ -45,28 +51,55 @@ const addIncident = async (req, res) => {
     });
   }
 };
-
 const getIncidents = async (req, res) => {
   jwtController.verifyToken(req, res, () => {
-    jwt.verify(req.token, "1234mmm", (err, authData) => {
+    jwt.verify(req.token, "1234mmm", async (err, authData) => {
       if (err) {
-        req.status(403).json({
+        res.status(403).json({
           error: "Forbidden",
         });
       } else {
-        Incident.find()
-          .exec()
-          .then((incidents) => {
-            res.status(200).json(incidents);
-          })
-          .catch((err) => {
-            res.status(500).json({
-              error: err,
-            });
+        try {
+          const incidents = await Incident.find().populate("userId").exec();
+          const incidentsWithUser = await Promise.all(
+            incidents.map(async (incident) => {
+              const user = await userModule.findOne({ _id: incident.userId });
+              return {
+                ...incident._doc,
+                user: user, // Include user data within incident
+              };
+            })
+          );
+          res.status(200).json({
+            incidents: incidentsWithUser,
           });
+        } catch (error) {
+          console.error(error);
+          res.status(500).json({
+            error: "Internal Server Error",
+          });
+        }
       }
     });
   });
 };
 
-module.exports = { addIncident };
+const deleteIncident = async (req, res) => {
+  jwtController.verifyToken(req, res, () => {
+    jwt.verify(req.token, "1234mmm", (err, authData) => {
+      if (err) {
+        res.status(403).json({
+          error: "Forbidden",
+        });
+      } else {
+        Incident.findOneAndDelete({ _id: req.body.incidentId }).then(() => {
+          res.status(200).json({
+            message: "Incident deleted successfully",
+          });
+        });
+      }
+    });
+  });
+};
+
+module.exports = { addIncident, getIncidents, deleteIncident };
