@@ -26,6 +26,10 @@ const incidentModel = new Schema({
     type: "string",
     required: true,
   },
+  status: {
+    type: "string",
+    default: "pending",
+  },
 });
 
 const incident = db.model("Incident", incidentModel);

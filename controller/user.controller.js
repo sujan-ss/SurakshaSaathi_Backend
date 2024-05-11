@@ -155,6 +155,30 @@ const verifyUser = async (req, res) => {
     });
   }
 };
+const deleteYourProfile = async (req, res) => {
+  try {
+    jwtController.verifyToken(req, res, () => {
+      jwt.verify(req.token, "1234mmm", (err, authData) => {
+        if (err) {
+          res.status(403).json({
+            error: "Forbidden",
+          });
+        } else {
+          User.findOneAndDelete({ _id: authData.id }).then(() => {
+            res.status(200).json({
+              message: "User deleted successfully",
+            });
+          });
+        }
+      });
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: "Internal Server Error",
+    });
+  }
+};
 
 const getAllVerifiedUsers = async (req, res) => {
   try {
@@ -239,4 +263,5 @@ module.exports = {
   getUserProfile,
   getAllVerifiedUsers,
   deleteUser,
+  deleteYourProfile,
 };

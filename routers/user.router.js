@@ -9,5 +9,6 @@ router.post("/verifyUser", userController.verifyUser);
 router.get("/getUserProfile", userController.getUserProfile);
 router.get("/getAllVerifiedUsers", userController.getAllVerifiedUsers);
 router.delete("/deleteUser", userController.deleteUser);
+router.delete("/deleteProfile", userController.deleteYourProfile);
 
 module.exports = router;

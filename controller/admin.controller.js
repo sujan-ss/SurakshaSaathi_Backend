@@ -26,6 +26,7 @@ const login = async (req, res) => {
         res.status(200).json({
           message: "Login successfull",
           accessToken: token,
+          role: admin[0].type,
         });
       }
     })

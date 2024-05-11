@@ -4,7 +4,7 @@ const Incident = require("../model/incident.model");
 const jwtController = require("./jwt.controller");
 
 const userModule = require("../model/user.model");
-
+const Notice = require("../model/notice.model");
 const addIncident = async (req, res) => {
   console.log("called add incident");
   try {
@@ -102,4 +102,43 @@ const deleteIncident = async (req, res) => {
   });
 };
 
-module.exports = { addIncident, getIncidents, deleteIncident };
+const changeIncidentStatus = async (req, res) => {
+  jwtController.verifyToken(req, res, () => {
+    jwt.verify(req.token, "1234mmm", (err, authData) => {
+      if (err) {
+        res.status(403).json({
+          error: "Forbidden",
+        });
+      } else {
+        Incident.findOneAndUpdate(
+          { _id: req.body.incidentId },
+          { status: req.body.status }
+        )
+          .then((incident) => {
+            const notice = new Notice({
+              _id: new mongoose.Types.ObjectId(),
+              message: `Your Incident status updated to ${req.body.status}`,
+              userId: incident.userId,
+            });
+            notice.save();
+            res.status(200).json({
+              message: "Incident status updated successfully",
+            });
+          })
+          .catch((err) => {
+            console.error(err);
+            res.status(500).json({
+              error: "Internal Server Error",
+            });
+          });
+      }
+    });
+  });
+};
+
+module.exports = {
+  addIncident,
+  getIncidents,
+  deleteIncident,
+  changeIncidentStatus,
+};
