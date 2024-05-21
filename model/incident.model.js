@@ -30,6 +30,10 @@ const incidentModel = new Schema({
     type: "string",
     default: "pending",
   },
+  police: {
+    type: "String",
+    default: "none",
+  },
 });
 
 const incident = db.model("Incident", incidentModel);

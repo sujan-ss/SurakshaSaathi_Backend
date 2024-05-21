@@ -255,6 +255,98 @@ const getUserProfile = async (req, res) => {
   });
 };
 
+const forgorPassword = async (req, res) => {
+  const email = req.body.email;
+  const user = await User.findOne({ email });
+
+  if (user) {
+    try {
+      const otp = generateOTP(6);
+      const user = await User.findOneAndUpdate(
+        { email: email },
+        { $set: { otp: otp, otpCreatedAt: Date.now() } }, // This line is causing the error
+        { new: true } // To return the updated document
+      );
+
+      res.status(200).json({
+        otp: otp,
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({
+        error: "Internal Server Error",
+      });
+    }
+  } else {
+    res.status(400).json({
+      error: "User not found",
+    });
+  }
+};
+const verifyOTP = async (req, res) => {
+  const { email, otp } = req.body;
+  try {
+    console.log(email, otp);
+    // Find the user by email and check if the OTP matches
+    const user = await User.findOne({ email: email, otp: otp });
+
+    if (user) {
+      // Check if the OTP is expired (assuming you have an expiration time for OTPs)
+      const otpExpirationTime = 5 * 60 * 1000; // 5 minutes in milliseconds
+      const currentTime = Date.now();
+      if (currentTime - user.otpCreatedAt > otpExpirationTime) {
+        return res.status(400).json({ error: "OTP expired" });
+      }
+
+      // OTP is valid, you can proceed with password reset or whatever is required
+      // For example, you might render a form for the user to input a new password
+      return res.status(200).json({ message: "OTP verified successfully" });
+    } else {
+      // No user found with the provided email and OTP combination
+      return res.status(400).json({ error: "Invalid OTP" });
+    }
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const changePassword = async (req, res) => {
+  const { email, newPassword } = req.body;
+  verifyOTP;
+  try {
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(req.body.password, salt);
+
+    const user = await User.findOneAndUpdate(
+      { email: email },
+      { $set: { password: hash } }
+    );
+    res.status(200).json({ message: "Password changed successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: "Internal Server Error",
+    });
+  }
+};
+
+function generateOTP(length) {
+  const timestamp = Date.now().toString();
+  let hash = 0;
+  for (let i = 0; i < timestamp.length; i++) {
+    hash = (hash << 5) - hash + parseInt(timestamp.charAt(i));
+    hash &= hash; // Convert to 32-bit integer
+  }
+  const digits = "0123456789";
+  let otp = "";
+  for (let i = 0; i < length; i++) {
+    const charIndex = Math.abs(hash + i) % digits.length;
+    otp += digits.charAt(charIndex);
+  }
+  return otp;
+}
+
 module.exports = {
   signUp,
   login,
@@ -264,4 +356,7 @@ module.exports = {
   getAllVerifiedUsers,
   deleteUser,
   deleteYourProfile,
+  forgorPassword,
+  verifyOTP,
+  changePassword,
 };

@@ -6,5 +6,6 @@ router.post("/addIncident", incidentController.addIncident);
 router.get("/getIncidents", incidentController.getIncidents);
 router.delete("/deleteIncident", incidentController.deleteIncident);
 router.put("/changeStatus", incidentController.changeIncidentStatus);
+router.put("/assignPolice", incidentController.changePolice);
 
 module.exports = router;

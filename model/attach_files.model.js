@@ -24,6 +24,11 @@ const attachFileModel = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "user",
   },
+  status: {
+    type: "string",
+
+    default: "pending",
+  },
 });
 
 const AttachFile = db.model("AttachFile", attachFileModel);

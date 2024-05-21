@@ -102,6 +102,35 @@ const deleteIncident = async (req, res) => {
   });
 };
 
+const changePolice = async (req, res) => {
+  console.log("called change police");
+  jwtController.verifyToken(req, res, () => {
+    jwt.verify(req.token, "1234mmm", (err, authData) => {
+      if (err) {
+        res.status(403).json({
+          error: "Forbidden",
+        });
+      } else {
+        Incident.findOneAndUpdate(
+          { _id: req.body.incidentId },
+          { police: req.body.police }
+        )
+          .then(() => {
+            res.status(200).json({
+              message: "Police assigned successfully",
+            });
+          })
+          .catch((err) => {
+            console.error(err);
+            res.status(500).json({
+              error: "Internal Server Error",
+            });
+          });
+      }
+    });
+  });
+};
+
 const changeIncidentStatus = async (req, res) => {
   jwtController.verifyToken(req, res, () => {
     jwt.verify(req.token, "1234mmm", (err, authData) => {
@@ -141,4 +170,5 @@ module.exports = {
   getIncidents,
   deleteIncident,
   changeIncidentStatus,
+  changePolice,
 };

@@ -10,5 +10,8 @@ router.get("/getUserProfile", userController.getUserProfile);
 router.get("/getAllVerifiedUsers", userController.getAllVerifiedUsers);
 router.delete("/deleteUser", userController.deleteUser);
 router.delete("/deleteProfile", userController.deleteYourProfile);
+router.post("/forgotPassword", userController.forgorPassword);
+router.post("/verifyOTP", userController.verifyOTP);
+router.put("/changePassword", userController.changePassword);
 
 module.exports = router;

@@ -39,6 +39,13 @@ const userSchema = new Schema({
     type: "boolean",
     default: false,
   },
+  otp: {
+    type: "string",
+  },
+  otpCreatedAt: {
+    type: "date",
+    required: false,
+  },
 });
 
 const userModel = db.model("User", userSchema);

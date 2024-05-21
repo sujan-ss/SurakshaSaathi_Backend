@@ -8,6 +8,7 @@ const incidentRouter = require("./routers/incident.router");
 const attach_filesRouter = require("./routers/attach_files.router");
 const cors = require("cors");
 const noticeRouter = require("./routers/notice.router");
+const policeRouter = require("./routers/police.router");
 
 //this is to parse json itesm
 const app = express();
@@ -24,6 +25,7 @@ app.use("/image", imageRouter);
 app.use("/incident", incidentRouter);
 app.use("/attach_files", attach_filesRouter);
 app.use("/notice", noticeRouter);
+app.use("/police", policeRouter);
 
 //this is the exports
 module.exports = app;

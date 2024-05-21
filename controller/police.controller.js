@@ -1,5 +1,6 @@
 const policeModel = require("../model/police.model");
 const jwtController = require("./jwt.controller");
+const mongoose = require("mongoose");
 
 const getPolice = async (req, res) => {
   jwtController.verifyToken(req, res, async (decoded) => {
@@ -37,3 +38,5 @@ const addPolice = async (req, res) => {
     }
   });
 };
+
+module.exports = { getPolice, addPolice };

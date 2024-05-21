@@ -88,4 +88,48 @@ const getAttachFiles = async (req, res) => {
   }
 };
 
-module.exports = { addAttachFile, getAttachFiles };
+const deleteAttachFile = async (req, res) => {
+  jwtController.verifyToken(req, res, () => {
+    jwt.verify(req.token, "1234mmm", (err, authData) => {
+      if (err) {
+        res.status(403).json({
+          error: "Forbidden",
+        });
+      } else {
+        AttachFile.findOneAndDelete({ _id: req.body.id }).then(() => {
+          res.status(200).json({
+            message: "AttachFile deleted successfully",
+          });
+        });
+      }
+    });
+  });
+};
+
+const chnageAttachFileStatus = async (req, res) => {
+  jwtController.verifyToken(req, res, () => {
+    jwt.verify(req.token, "1234mmm", (err, authData) => {
+      if (err) {
+        res.status(403).json({
+          error: "Forbidden",
+        });
+      } else {
+        AttachFile.findOneAndUpdate(
+          { _id: req.body.id },
+          { status: req.body.status }
+        ).then(() => {
+          res.status(200).json({
+            message: "AttachFile status changed successfully",
+          });
+        });
+      }
+    });
+  });
+};
+
+module.exports = {
+  addAttachFile,
+  getAttachFiles,
+  deleteAttachFile,
+  chnageAttachFileStatus,
+};
