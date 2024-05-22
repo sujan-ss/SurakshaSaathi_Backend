@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
-
+const Notice = require("../model/notice.model");
 const AttachFile = require("../model/attach_files.model");
 const jwtController = require("./jwt.controller");
 
@@ -117,7 +117,13 @@ const chnageAttachFileStatus = async (req, res) => {
         AttachFile.findOneAndUpdate(
           { _id: req.body.id },
           { status: req.body.status }
-        ).then(() => {
+        ).then((attachFile) => {
+          const notice = new Notice({
+            _id: new mongoose.Types.ObjectId(),
+            message: `Your Incident status updated to ${req.body.status}`,
+            userId: attachFile.user,
+          });
+          notice.save();
           res.status(200).json({
             message: "AttachFile status changed successfully",
           });
